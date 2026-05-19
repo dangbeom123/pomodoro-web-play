@@ -1,23 +1,43 @@
-const MIN_LENGTH_MINUTES = 1;
-const MAX_LENGTH_MINUTES = 60;
-const MODE_SESSION = "SESSION";
-const MODE_BREAK = "BREAK";
+const SCREENS = {
+  WELCOME: "welcome",
+  PERMISSION: "permission",
+  PREVIEW: "preview",
+  DASHBOARD: "dashboard",
+};
 
+const MODES = {
+  FOCUS: "FOCUS",
+  SHORT_BREAK: "SHORT_BREAK",
+  LONG_BREAK: "LONG_BREAK",
+};
+
+const MODE_LENGTHS = {
+  [MODES.FOCUS]: 25,
+  [MODES.SHORT_BREAK]: 5,
+  [MODES.LONG_BREAK]: 15,
+};
+
+const screenElements = document.querySelectorAll("[data-screen]");
+const startOnboardingButton = document.querySelector("[data-start-onboarding]");
+const enableCameraButton = document.querySelector("[data-enable-camera]");
+const skipCameraButton = document.querySelector("[data-skip-camera]");
+const readyFocusButton = document.querySelector("[data-ready-focus]");
+const standardModeButton = document.querySelector("[data-standard-mode]");
+const cameraErrorMessage = document.querySelector("[data-camera-error]");
+const cameraPreview = document.querySelector("[data-camera-preview]");
+const deviceName = document.querySelector("[data-device-name]");
 const timerDisplay = document.querySelector("[data-timer-display]");
-const modeLabel = document.querySelector("[data-mode-label]");
 const startPauseButton = document.querySelector("[data-start-pause-button]");
 const resetButton = document.querySelector("[data-reset-button]");
-const sessionDecreaseButton = document.querySelector("[data-session-decrease]");
-const sessionIncreaseButton = document.querySelector("[data-session-increase]");
-const sessionLengthValue = document.querySelector("[data-session-length]");
-const breakDecreaseButton = document.querySelector("[data-break-decrease]");
-const breakIncreaseButton = document.querySelector("[data-break-increase]");
-const breakLengthValue = document.querySelector("[data-break-length]");
+const modeTabs = document.querySelectorAll("[data-mode-tab]");
 
-let sessionLengthMinutes = 25;
-let breakLengthMinutes = 5;
-let currentMode = MODE_SESSION;
-let remainingSeconds = sessionLengthMinutes * 60;
+let currentScreen = SCREENS.WELCOME;
+let webcamEnabled = false;
+let cameraStream = null;
+let cameraError = "";
+
+let currentMode = MODES.FOCUS;
+let remainingSeconds = MODE_LENGTHS[currentMode] * 60;
 let timerId = null;
 
 function formatTime(totalSeconds) {
@@ -27,59 +47,63 @@ function formatTime(totalSeconds) {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
-function renderTime() {
-  timerDisplay.textContent = formatTime(remainingSeconds);
-}
-
-function renderMode() {
-  modeLabel.textContent = currentMode;
-}
-
-function renderTimer() {
-  renderMode();
-  renderTime();
-}
-
-function renderLengths() {
-  sessionLengthValue.textContent = sessionLengthMinutes;
-  breakLengthValue.textContent = breakLengthMinutes;
-}
-
-function setRunning(isRunning) {
-  startPauseButton.textContent = isRunning ? "Pause" : "Start";
-}
-
 function isRunning() {
   return timerId !== null;
 }
 
-function getCurrentLengthMinutes() {
-  return currentMode === MODE_BREAK ? breakLengthMinutes : sessionLengthMinutes;
+function renderScreen() {
+  screenElements.forEach((screen) => {
+    screen.classList.toggle("is-active", screen.dataset.screen === currentScreen);
+  });
 }
 
-function clampLength(minutes) {
-  return Math.min(MAX_LENGTH_MINUTES, Math.max(MIN_LENGTH_MINUTES, minutes));
-}
-
-function syncIdleTimerDisplayFor(mode) {
-  if (isRunning() || currentMode !== mode) {
+function renderCameraError() {
+  if (!cameraErrorMessage) {
     return;
   }
 
-  remainingSeconds = getCurrentLengthMinutes() * 60;
+  cameraErrorMessage.textContent = cameraError;
+  cameraErrorMessage.hidden = cameraError === "";
+}
+
+function renderTimer() {
+  if (timerDisplay) {
+    timerDisplay.textContent = formatTime(remainingSeconds);
+  }
+}
+
+function renderModeTabs() {
+  modeTabs.forEach((tab) => {
+    const isSelected = tab.dataset.modeTab === currentMode;
+    tab.classList.toggle("is-active", isSelected);
+    tab.setAttribute("aria-selected", String(isSelected));
+  });
+}
+
+function setRunning(isTimerRunning) {
+  if (!startPauseButton) {
+    return;
+  }
+
+  startPauseButton.classList.toggle("is-running", isTimerRunning);
+  startPauseButton.setAttribute("aria-label", isTimerRunning ? "Pause timer" : "Start timer");
+}
+
+function renderApp() {
+  renderScreen();
+  renderCameraError();
   renderTimer();
+  renderModeTabs();
+  setRunning(isRunning());
 }
 
-function updateSessionLength(delta) {
-  sessionLengthMinutes = clampLength(sessionLengthMinutes + delta);
-  renderLengths();
-  syncIdleTimerDisplayFor(MODE_SESSION);
+function navigateTo(screenName) {
+  currentScreen = screenName;
+  renderApp();
 }
 
-function updateBreakLength(delta) {
-  breakLengthMinutes = clampLength(breakLengthMinutes + delta);
-  renderLengths();
-  syncIdleTimerDisplayFor(MODE_BREAK);
+function getCurrentLengthSeconds() {
+  return MODE_LENGTHS[currentMode] * 60;
 }
 
 function pauseTimer() {
@@ -92,26 +116,43 @@ function pauseTimer() {
   setRunning(false);
 }
 
-function switchMode() {
-  currentMode = currentMode === MODE_SESSION ? MODE_BREAK : MODE_SESSION;
-  remainingSeconds = getCurrentLengthMinutes() * 60;
+function resetTimer() {
+  pauseTimer();
+  remainingSeconds = getCurrentLengthSeconds();
   renderTimer();
+}
+
+function selectMode(nextMode) {
+  if (!MODE_LENGTHS[nextMode]) {
+    return;
+  }
+
+  pauseTimer();
+  currentMode = nextMode;
+  remainingSeconds = getCurrentLengthSeconds();
+  renderApp();
+}
+
+function switchModeAfterCountdown() {
+  currentMode = currentMode === MODES.FOCUS ? MODES.SHORT_BREAK : MODES.FOCUS;
+  remainingSeconds = getCurrentLengthSeconds();
+  renderApp();
 }
 
 function tick() {
   if (remainingSeconds <= 0) {
-    switchMode();
+    switchModeAfterCountdown();
     return;
   }
 
   remainingSeconds -= 1;
 
   if (remainingSeconds === 0) {
-    switchMode();
+    switchModeAfterCountdown();
     return;
   }
 
-  renderTime();
+  renderTimer();
 }
 
 function startTimer() {
@@ -120,46 +161,111 @@ function startTimer() {
   }
 
   if (remainingSeconds <= 0) {
-    switchMode();
+    switchModeAfterCountdown();
   }
 
-  setRunning(true);
   timerId = setInterval(tick, 1000);
-}
-
-function resetTimer() {
-  pauseTimer();
-  remainingSeconds = getCurrentLengthMinutes() * 60;
-  renderTimer();
+  setRunning(true);
 }
 
 function handleStartPauseClick() {
-  if (!isRunning()) {
-    startTimer();
+  if (isRunning()) {
+    pauseTimer();
     return;
   }
 
-  pauseTimer();
+  startTimer();
 }
 
-if (
-  timerDisplay &&
-  modeLabel &&
-  startPauseButton &&
-  resetButton &&
-  sessionDecreaseButton &&
-  sessionIncreaseButton &&
-  sessionLengthValue &&
-  breakDecreaseButton &&
-  breakIncreaseButton &&
-  breakLengthValue
-) {
-  renderLengths();
-  renderTimer();
-  startPauseButton.addEventListener("click", handleStartPauseClick);
-  resetButton.addEventListener("click", resetTimer);
-  sessionDecreaseButton.addEventListener("click", () => updateSessionLength(-1));
-  sessionIncreaseButton.addEventListener("click", () => updateSessionLength(1));
-  breakDecreaseButton.addEventListener("click", () => updateBreakLength(-1));
-  breakIncreaseButton.addEventListener("click", () => updateBreakLength(1));
+function stopCameraStream() {
+  if (cameraPreview) {
+    cameraPreview.srcObject = null;
+  }
+
+  if (!cameraStream) {
+    return;
+  }
+
+  cameraStream.getTracks().forEach((track) => track.stop());
+  cameraStream = null;
 }
+
+function continueWithoutCamera() {
+  webcamEnabled = false;
+  stopCameraStream();
+  navigateTo(SCREENS.DASHBOARD);
+}
+
+async function requestCameraPermission() {
+  cameraError = "";
+  renderCameraError();
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    webcamEnabled = false;
+    cameraError = "Camera access is not available in this browser. You can continue in standard timer mode.";
+    renderCameraError();
+    return;
+  }
+
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: false,
+    });
+
+    webcamEnabled = true;
+
+    if (cameraPreview) {
+      cameraPreview.srcObject = cameraStream;
+    }
+
+    const [track] = cameraStream.getVideoTracks();
+    if (track && deviceName) {
+      deviceName.textContent = track.label || "Camera 1";
+    }
+
+    navigateTo(SCREENS.PREVIEW);
+  } catch (error) {
+    webcamEnabled = false;
+    stopCameraStream();
+    cameraError = "Camera permission was denied or the camera is unavailable. You can continue in standard timer mode.";
+    renderCameraError();
+  }
+}
+
+function handleReadyToFocus() {
+  stopCameraStream();
+  navigateTo(SCREENS.DASHBOARD);
+}
+
+function bindEvents() {
+  startOnboardingButton?.addEventListener("click", () => navigateTo(SCREENS.PERMISSION));
+  enableCameraButton?.addEventListener("click", requestCameraPermission);
+  skipCameraButton?.addEventListener("click", continueWithoutCamera);
+  readyFocusButton?.addEventListener("click", handleReadyToFocus);
+  standardModeButton?.addEventListener("click", continueWithoutCamera);
+  startPauseButton?.addEventListener("click", handleStartPauseClick);
+  resetButton?.addEventListener("click", resetTimer);
+
+  modeTabs.forEach((tab) => {
+    tab.addEventListener("click", () => selectMode(tab.dataset.modeTab));
+  });
+}
+
+bindEvents();
+renderApp();
+
+window.Gazodoro = {
+  get currentScreen() {
+    return currentScreen;
+  },
+  get webcamEnabled() {
+    return webcamEnabled;
+  },
+  get cameraStream() {
+    return cameraStream;
+  },
+  get cameraError() {
+    return cameraError;
+  },
+};
