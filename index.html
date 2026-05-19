@@ -5,14 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simple Pomodoro Web</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="script.js" defer></script>
 </head>
 <body>
   <main class="app" aria-labelledby="app-title">
-    <section class="app__container">
-      <p class="app__eyebrow">Pomodoro</p>
-      <h1 id="app-title">Simple Pomodoro Web</h1>
-      <p class="app__intro">A focused timer app shell, ready for the next implementation step.</p>
+    <section class="timer-card" aria-label="Pomodoro timer">
+      <div class="timer-display">
+        <p class="timer-label">SESSION</p>
+        <h1 id="app-title" class="timer-time">25:00</h1>
+        <div class="timer-actions" aria-label="Timer actions">
+          <button class="timer-button" type="button">Start</button>
+          <button class="timer-button" type="button">Reset</button>
+        </div>
+      </div>
+
+      <div class="timer-controls" aria-label="Timer length controls">
+        <section class="control-box" aria-label="Break length">
+          <div class="control-row">
+            <button class="control-button" type="button" aria-label="Decrease break length">-</button>
+            <span class="control-value">5</span>
+            <button class="control-button" type="button" aria-label="Increase break length">+</button>
+          </div>
+          <p class="control-label">Break Length</p>
+        </section>
+
+        <section class="control-box" aria-label="Session length">
+          <div class="control-row">
+            <button class="control-button" type="button" aria-label="Decrease session length">-</button>
+            <span class="control-value">25</span>
+            <button class="control-button" type="button" aria-label="Increase session length">+</button>
+          </div>
+          <p class="control-label">Session Length</p>
+        </section>
+      </div>
     </section>
   </main>
 </body>
