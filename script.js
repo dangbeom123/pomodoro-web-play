@@ -4,6 +4,7 @@ const MODE_SESSION = "SESSION";
 const MODE_BREAK = "BREAK";
 
 const timerDisplay = document.querySelector("[data-timer-display]");
+const modeLabel = document.querySelector("[data-mode-label]");
 const startPauseButton = document.querySelector("[data-start-pause-button]");
 const resetButton = document.querySelector("[data-reset-button]");
 const sessionDecreaseButton = document.querySelector("[data-session-decrease]");
@@ -28,6 +29,15 @@ function formatTime(totalSeconds) {
 
 function renderTime() {
   timerDisplay.textContent = formatTime(remainingSeconds);
+}
+
+function renderMode() {
+  modeLabel.textContent = currentMode;
+}
+
+function renderTimer() {
+  renderMode();
+  renderTime();
 }
 
 function renderLengths() {
@@ -57,7 +67,7 @@ function syncIdleTimerDisplayFor(mode) {
   }
 
   remainingSeconds = getCurrentLengthMinutes() * 60;
-  renderTime();
+  renderTimer();
 }
 
 function updateSessionLength(delta) {
@@ -82,24 +92,35 @@ function pauseTimer() {
   setRunning(false);
 }
 
+function switchMode() {
+  currentMode = currentMode === MODE_SESSION ? MODE_BREAK : MODE_SESSION;
+  remainingSeconds = getCurrentLengthMinutes() * 60;
+  renderTimer();
+}
+
 function tick() {
   if (remainingSeconds <= 0) {
-    pauseTimer();
-    renderTime();
+    switchMode();
     return;
   }
 
   remainingSeconds -= 1;
-  renderTime();
 
   if (remainingSeconds === 0) {
-    pauseTimer();
+    switchMode();
+    return;
   }
+
+  renderTime();
 }
 
 function startTimer() {
-  if (isRunning() || remainingSeconds <= 0) {
+  if (isRunning()) {
     return;
+  }
+
+  if (remainingSeconds <= 0) {
+    switchMode();
   }
 
   setRunning(true);
@@ -109,7 +130,7 @@ function startTimer() {
 function resetTimer() {
   pauseTimer();
   remainingSeconds = getCurrentLengthMinutes() * 60;
-  renderTime();
+  renderTimer();
 }
 
 function handleStartPauseClick() {
@@ -123,6 +144,7 @@ function handleStartPauseClick() {
 
 if (
   timerDisplay &&
+  modeLabel &&
   startPauseButton &&
   resetButton &&
   sessionDecreaseButton &&
@@ -133,7 +155,7 @@ if (
   breakLengthValue
 ) {
   renderLengths();
-  renderTime();
+  renderTimer();
   startPauseButton.addEventListener("click", handleStartPauseClick);
   resetButton.addEventListener("click", resetTimer);
   sessionDecreaseButton.addEventListener("click", () => updateSessionLength(-1));
