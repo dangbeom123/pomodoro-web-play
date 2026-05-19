@@ -1,18 +1,15 @@
 # Simple Pomodoro Web
 
-A simple Pomodoro timer web app built to practice Git, GitHub, clean commits, and a professional project workflow.
+A small vanilla JavaScript Pomodoro timer built as a learning project for practicing Git, GitHub, and a professional planning/build/review workflow.
 
-## Project Goal
+## Features
 
-The goal of this project is to build a small Pomodoro timer web application while practicing a professional development workflow using Git, GitHub, branches, commits, and pull requests.
-
-## Core Features
-
-- Display a Pomodoro session timer
-- Start, pause, and reset the timer
-- Adjust session length
-- Adjust break length
-- Automatically switch between session and break modes
+- Session timer with `MM:SS` display
+- Start, pause, and reset controls
+- Adjustable session length from 1 to 60 minutes
+- Adjustable break length from 1 to 60 minutes
+- Automatic switching between `SESSION` and `BREAK`
+- Responsive single-page layout
 
 ## Tech Stack
 
@@ -20,21 +17,43 @@ The goal of this project is to build a small Pomodoro timer web application whil
 - CSS
 - JavaScript
 
-## Workflow
+No frameworks, build tools, or external dependencies are required.
 
-This project uses a structured workflow with planning, building, reviewing, and handoff documents.
+## Run Locally
 
-Main workflow documents:
+1. Clone the repository.
+2. Open the project folder.
+3. Open `index.html` in a web browser.
 
-- `AGENTS.md`
-- `ARCHITECT.md`
-- `BUILDER.md`
-- `REVIEWER.md`
-- `handoff/`
+Because this is a static web app, it can run directly from the browser without installing packages.
 
-## Branch Strategy
+## Git and GitHub Learning Goals
 
-- `main`: stable version
-- `feature/*`: individual implementation tasks
-- `docs/*`: documentation updates
-- `fix/*`: bug fixes
+- Practice working from feature and documentation branches
+- Keep commits focused and easy to review
+- Use pull requests for review before merging to `main`
+- Maintain handoff notes for planning, building, and reviewing changes
+
+## Project Structure
+
+```text
+.
+|-- index.html
+|-- styles.css
+|-- script.js
+|-- README.md
+|-- AGENTS.md
+|-- ARCHITECT.md
+|-- BUILDER.md
+|-- REVIEWER.md
+`-- handoff/
+    |-- ARCHITECT-BRIEF.md
+    |-- BUILD-LOG.md
+    |-- REVIEW-FEEDBACK.md
+    |-- REVIEW-REQUEST.md
+    `-- SESSION-CHECKPOINT.md
+```
+
+## Screenshots
+
+Screenshots will be added as the interface stabilizes.
