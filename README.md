@@ -68,24 +68,46 @@ Gazodoro helps users maintain sustained attention and manage fatigue during comp
 - HTML
 - CSS
 - JavaScript
+- FastAPI
+- Supabase Python client
 
-No frameworks, build tools, or external dependencies are required.
+The frontend is a static web app with no build step. The backend is a small FastAPI service for logging Pomodoro focus sessions.
 
 ## Run Locally
 
+### Frontend
+
 1. Clone the repository.
 2. Open the project folder.
-3. Open `index.html` in a modern desktop browser such as Chrome, Edge, or Firefox.
+3. Open `frontend/index.html` in a modern desktop browser such as Chrome, Edge, or Firefox.
 
 Because this is a static web app, it can run directly from the browser without installing packages.
+
+### Backend
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+Copy-Item .env.example .env
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Set `SUPABASE_URL` and `SUPABASE_SECRET_KEY` in `backend/.env` before logging focus reset sessions.
 
 ## Project Structure
 
 ```text
 .
-|-- index.html
-|-- styles.css
-|-- script.js
+|-- frontend/
+|   |-- index.html
+|   |-- styles.css
+|   `-- script.js
+|-- backend/
+|   |-- main.py
+|   |-- requirements.txt
+|   `-- .env.example
 |-- README.md
 |-- docs/
 |   |-- PRD.md
