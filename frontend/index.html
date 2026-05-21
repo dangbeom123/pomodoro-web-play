@@ -220,7 +220,7 @@
           </button>
           </div>
           <div class="utility-controls" aria-label="Dashboard tools">
-            <button class="round-button utility-button" type="button" aria-label="Statistics">
+            <button class="round-button utility-button" type="button" aria-label="Statistics" data-open-analytics>
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 19V5"></path>
                 <path d="M4 19h16"></path>
@@ -263,7 +263,7 @@
             </span>
             <span class="settings-chevron" aria-hidden="true">›</span>
           </button>
-          <button class="settings-row" type="button">
+          <button class="settings-row" type="button" data-open-sound-settings>
             <span class="settings-row-label">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
@@ -274,7 +274,7 @@
             </span>
             <span class="settings-chevron" aria-hidden="true">›</span>
           </button>
-          <button class="settings-row" type="button">
+          <button class="settings-row" type="button" data-open-statistics-settings>
             <span class="settings-row-label">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 19V5"></path>
@@ -287,7 +287,7 @@
             </span>
             <span class="settings-chevron" aria-hidden="true">›</span>
           </button>
-          <button class="settings-row" type="button">
+          <button class="settings-row" type="button" data-open-timer-settings>
             <span class="settings-row-label">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <circle cx="12" cy="12" r="9"></circle>
@@ -297,7 +297,7 @@
             </span>
             <span class="settings-chevron" aria-hidden="true">›</span>
           </button>
-          <button class="settings-row" type="button">
+          <button class="settings-row" type="button" data-open-appearance-settings>
             <span class="settings-row-label">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <circle cx="13.5" cy="6.5" r="2.5"></circle>
@@ -339,6 +339,171 @@
               <option>Camera 1</option>
               <option>Camera 2</option>
             </select>
+          </div>
+        </article>
+      </div>
+      <button class="help-button" type="button" aria-label="Help">?</button>
+    </section>
+
+    <section class="screen sound-settings-screen settings-detail-screen" data-screen="sound-settings" aria-labelledby="sound-settings-title">
+      <div class="settings-shell">
+        <header class="settings-heading">
+          <button class="back-button" type="button" aria-label="Back to settings" data-back-settings>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 12H5"></path>
+              <path d="m12 19-7-7 7-7"></path>
+            </svg>
+          </button>
+          <h1 id="sound-settings-title">Sound</h1>
+        </header>
+
+        <article class="settings-card sound-card">
+          <h2>Volume</h2>
+          <div class="volume-control">
+            <span>0</span>
+            <input type="range" min="0" max="100" value="50" aria-label="Volume" data-volume-slider>
+            <span>100</span>
+          </div>
+          <strong class="volume-value" data-volume-value>50</strong>
+        </article>
+
+        <article class="settings-card settings-inline-card">
+          <div>
+            <h2>Session end notification</h2>
+            <p>I want to hear when session end</p>
+          </div>
+          <button class="toggle-switch is-on" type="button" role="switch" aria-checked="true" data-sound-notification-toggle>
+            <span></span>
+          </button>
+        </article>
+      </div>
+      <button class="help-button" type="button" aria-label="Help">?</button>
+    </section>
+
+    <section class="screen statistics-settings-screen settings-detail-screen" data-screen="statistics-settings" aria-labelledby="statistics-settings-title">
+      <div class="settings-shell">
+        <header class="settings-heading">
+          <button class="back-button" type="button" aria-label="Back to settings" data-back-settings>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 12H5"></path>
+              <path d="m12 19-7-7 7-7"></path>
+            </svg>
+          </button>
+          <h1 id="statistics-settings-title">Statistics</h1>
+        </header>
+
+        <article class="settings-card analytics-entry-card">
+          <h2>Statistics & Analytics</h2>
+          <p>View your focus analytics and session history from the main dashboard.</p>
+          <button class="analytics-button" type="button" data-open-analytics>View Analytics</button>
+        </article>
+      </div>
+      <button class="help-button" type="button" aria-label="Help">?</button>
+    </section>
+
+    <section class="screen analytics-screen" data-screen="analytics" aria-labelledby="analytics-title">
+      <div class="analytics-shell">
+        <header class="settings-heading analytics-heading">
+          <button class="back-button" type="button" aria-label="Back to dashboard" data-back-dashboard>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 12H5"></path>
+              <path d="m12 19-7-7 7-7"></path>
+            </svg>
+          </button>
+          <h1 id="analytics-title">Focus Analytics</h1>
+        </header>
+
+        <div class="analytics-grid">
+          <article class="analytics-card focus-quality-card">
+            <header class="analytics-card-heading">
+              <div>
+                <h2>Focus Quality Over Time</h2>
+                <p>Your self-reported focus ratings</p>
+              </div>
+              <span class="avg-pill">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m4 16 5-5 4 4 7-7"></path>
+                  <path d="M15 8h5v5"></path>
+                </svg>
+                0 avg
+              </span>
+            </header>
+            <div class="empty-chart">Complete a session to see your focus data</div>
+          </article>
+
+          <article class="analytics-card heatmap-card">
+            <header class="analytics-card-heading">
+              <div>
+                <h2>Gaze Tracking Heatmap</h2>
+                <p>Where your eyes focused on screen</p>
+              </div>
+              <span class="active-pill">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                Active
+              </span>
+            </header>
+            <div class="heatmap" aria-label="Simulated gaze tracking heatmap">
+              <span class="h1"></span><span class="h3"></span><span class="h2"></span><span class="h4"></span><span class="h3"></span><span class="h1"></span><span class="h4"></span><span class="h3"></span><span class="h1"></span><span class="h3"></span><span class="h2"></span><span class="h3"></span><span class="h3"></span><span class="h1"></span><span class="h1"></span><span class="h2"></span>
+              <span class="h4"></span><span class="h2"></span><span class="h2"></span><span class="h1"></span><span class="h1"></span><span class="h3"></span><span class="h4"></span><span class="h1"></span><span class="h5"></span><span class="h2"></span><span class="h3"></span><span class="h4"></span><span class="h2"></span><span class="h2"></span><span class="h2"></span><span class="h2"></span>
+              <span class="h4"></span><span class="h4"></span><span class="h5"></span><span class="h3"></span><span class="h3"></span><span class="h5"></span><span class="h4"></span><span class="h1"></span><span class="h1"></span><span class="h4"></span><span class="h2"></span><span class="h3"></span><span class="h3"></span><span class="h2"></span><span class="h2"></span><span class="h4"></span>
+              <span class="h5"></span><span class="h3"></span><span class="h5"></span><span class="h4"></span><span class="h4"></span><span class="h4"></span><span class="h3"></span><span class="h4"></span><span class="h2"></span><span class="h5"></span><span class="h5"></span><span class="h3"></span><span class="h3"></span><span class="h2"></span><span class="h3"></span><span class="h5"></span>
+              <span class="h4"></span><span class="h5"></span><span class="h5"></span><span class="h2"></span><span class="h3"></span><span class="h3"></span><span class="h5"></span><span class="h4"></span><span class="h3"></span><span class="h4"></span><span class="h5"></span><span class="h3"></span><span class="h3"></span><span class="h2"></span><span class="h2"></span><span class="h4"></span>
+              <span class="h4"></span><span class="h3"></span><span class="h2"></span><span class="h3"></span><span class="h2"></span><span class="h3"></span><span class="h2"></span><span class="h4"></span><span class="h3"></span><span class="h4"></span><span class="h3"></span><span class="h4"></span><span class="h2"></span><span class="h1"></span><span class="h4"></span><span class="h3"></span>
+              <span class="h5"></span><span class="h2"></span><span class="h5"></span><span class="h5"></span><span class="h5"></span><span class="h4"></span><span class="h4"></span><span class="h2"></span><span class="h3"></span><span class="h5"></span><span class="h2"></span><span class="h4"></span><span class="h2"></span><span class="h2"></span><span class="h3"></span><span class="h2"></span>
+              <div class="heatmap-legend"><span></span><strong>Low → High</strong></div>
+            </div>
+            <p class="heatmap-note">Simulated data - Real gaze tracking requires camera calibration</p>
+          </article>
+        </div>
+
+        <article class="analytics-card session-history-card">
+          <h2>Session History</h2>
+          <div class="empty-history">No sessions completed yet</div>
+        </article>
+      </div>
+      <button class="help-button" type="button" aria-label="Help">?</button>
+    </section>
+
+    <section class="screen timer-settings-screen settings-detail-screen" data-screen="timer-settings" aria-labelledby="timer-settings-title">
+      <div class="settings-shell">
+        <header class="settings-heading">
+          <button class="back-button" type="button" aria-label="Back to settings" data-back-settings>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 12H5"></path>
+              <path d="m12 19-7-7 7-7"></path>
+            </svg>
+          </button>
+          <h1 id="timer-settings-title">Timer</h1>
+        </header>
+
+        <article class="settings-card timer-info-card">
+          <h2>Timer Settings</h2>
+          <p>Timer duration can be adjusted from the main dashboard using the +/- buttons.</p>
+        </article>
+      </div>
+      <button class="help-button" type="button" aria-label="Help">?</button>
+    </section>
+
+    <section class="screen appearance-settings-screen settings-detail-screen" data-screen="appearance-settings" aria-labelledby="appearance-settings-title">
+      <div class="settings-shell">
+        <header class="settings-heading">
+          <button class="back-button" type="button" aria-label="Back to settings" data-back-settings>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 12H5"></path>
+              <path d="m12 19-7-7 7-7"></path>
+            </svg>
+          </button>
+          <h1 id="appearance-settings-title">Appearance</h1>
+        </header>
+
+        <article class="settings-card appearance-card">
+          <h2>Dark/Light mode</h2>
+          <div class="theme-segmented" role="group" aria-label="Theme mode">
+            <button class="theme-option is-active" type="button">Light</button>
+            <button class="theme-option" type="button" disabled>Dark</button>
           </div>
         </article>
       </div>

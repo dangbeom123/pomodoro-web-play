@@ -5,6 +5,11 @@ const SCREENS = {
   DASHBOARD: "dashboard",
   SETTINGS: "settings",
   CAMERA_SETTINGS: "camera-settings",
+  SOUND_SETTINGS: "sound-settings",
+  STATISTICS_SETTINGS: "statistics-settings",
+  ANALYTICS: "analytics",
+  TIMER_SETTINGS: "timer-settings",
+  APPEARANCE_SETTINGS: "appearance-settings",
 };
 
 const MODES = {
@@ -37,7 +42,12 @@ const modeTabs = document.querySelectorAll("[data-mode-tab]");
 const openSettingsButton = document.querySelector("[data-open-settings]");
 const backDashboardButtons = document.querySelectorAll("[data-back-dashboard]");
 const openCameraSettingsButton = document.querySelector("[data-open-camera-settings]");
-const backSettingsButton = document.querySelector("[data-back-settings]");
+const openSoundSettingsButton = document.querySelector("[data-open-sound-settings]");
+const openStatisticsSettingsButton = document.querySelector("[data-open-statistics-settings]");
+const openAnalyticsButtons = document.querySelectorAll("[data-open-analytics]");
+const openTimerSettingsButton = document.querySelector("[data-open-timer-settings]");
+const openAppearanceSettingsButton = document.querySelector("[data-open-appearance-settings]");
+const backSettingsButtons = document.querySelectorAll("[data-back-settings]");
 const cameraToggleButton = document.querySelector("[data-camera-toggle]");
 const cameraSelectPanel = document.querySelector("[data-camera-select-panel]");
 const cameraModeLabel = document.querySelector("[data-camera-mode-label]");
@@ -45,6 +55,9 @@ const timerRing = document.querySelector("[data-timer-ring]");
 const timeMinutes = document.querySelector("[data-time-minutes]");
 const timeIncreaseButton = document.querySelector("[data-time-increase]");
 const timeDecreaseButton = document.querySelector("[data-time-decrease]");
+const volumeSlider = document.querySelector("[data-volume-slider]");
+const volumeValue = document.querySelector("[data-volume-value]");
+const soundNotificationToggle = document.querySelector("[data-sound-notification-toggle]");
 
 let currentScreen = SCREENS.WELCOME;
 let webcamEnabled = false;
@@ -56,6 +69,7 @@ let remainingSeconds = MODE_LENGTHS[currentMode] * 60;
 let timerId = null;
 let activeFocusSession = null;
 let cameraModeEnabled = false;
+let sessionEndSoundEnabled = true;
 
 function formatTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -124,6 +138,17 @@ function renderTimeControls() {
   }
 }
 
+function renderSoundSettings() {
+  if (volumeSlider && volumeValue) {
+    volumeValue.textContent = volumeSlider.value;
+  }
+
+  if (soundNotificationToggle) {
+    soundNotificationToggle.classList.toggle("is-on", sessionEndSoundEnabled);
+    soundNotificationToggle.setAttribute("aria-checked", String(sessionEndSoundEnabled));
+  }
+}
+
 function setRunning(isTimerRunning) {
   if (!startPauseButton) {
     return;
@@ -140,6 +165,7 @@ function renderApp() {
   renderModeTabs();
   renderCameraMode();
   renderTimeControls();
+  renderSoundSettings();
   setRunning(isRunning());
 }
 
@@ -393,17 +419,33 @@ function bindEvents() {
   resetButton?.addEventListener("click", resetTimer);
   openSettingsButton?.addEventListener("click", () => navigateTo(SCREENS.SETTINGS));
   openCameraSettingsButton?.addEventListener("click", () => navigateTo(SCREENS.CAMERA_SETTINGS));
-  backSettingsButton?.addEventListener("click", () => navigateTo(SCREENS.SETTINGS));
+  openSoundSettingsButton?.addEventListener("click", () => navigateTo(SCREENS.SOUND_SETTINGS));
+  openStatisticsSettingsButton?.addEventListener("click", () => navigateTo(SCREENS.STATISTICS_SETTINGS));
+  openTimerSettingsButton?.addEventListener("click", () => navigateTo(SCREENS.TIMER_SETTINGS));
+  openAppearanceSettingsButton?.addEventListener("click", () => navigateTo(SCREENS.APPEARANCE_SETTINGS));
   cameraToggleButton?.addEventListener("click", () => {
     cameraModeEnabled = !cameraModeEnabled;
     webcamEnabled = cameraModeEnabled;
     renderCameraMode();
   });
+  soundNotificationToggle?.addEventListener("click", () => {
+    sessionEndSoundEnabled = !sessionEndSoundEnabled;
+    renderSoundSettings();
+  });
+  volumeSlider?.addEventListener("input", renderSoundSettings);
   timeIncreaseButton?.addEventListener("click", () => adjustCurrentModeLength(1));
   timeDecreaseButton?.addEventListener("click", () => adjustCurrentModeLength(-1));
 
   backDashboardButtons.forEach((button) => {
     button.addEventListener("click", () => navigateTo(SCREENS.DASHBOARD));
+  });
+
+  backSettingsButtons.forEach((button) => {
+    button.addEventListener("click", () => navigateTo(SCREENS.SETTINGS));
+  });
+
+  openAnalyticsButtons.forEach((button) => {
+    button.addEventListener("click", () => navigateTo(SCREENS.ANALYTICS));
   });
 
   modeTabs.forEach((tab) => {
