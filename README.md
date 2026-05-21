@@ -117,9 +117,11 @@ Set `SUPABASE_URL` and `SUPABASE_SECRET_KEY` in `backend/.env` before logging fo
 |       |-- 03-camera-preview.png
 |       `-- 04-main-dashboard.png
 |-- AGENTS.md
-|-- ARCHITECT.md
-|-- BUILDER.md
-`-- REVIEWER.md
+`-- three-man-team/
+    |-- AGENTS.md
+    |-- ARCHITECT.md
+    |-- BUILDER.md
+    `-- REVIEWER.md
 ```
 
 ## Design Screens
