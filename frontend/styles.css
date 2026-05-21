@@ -21,9 +21,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at left top, #eef5ff 0, rgb(238 245 255 / 0.72) 26%, transparent 48%),
-    #ffffff;
+  background: #ffffff;
 }
 
 button {
@@ -424,62 +422,130 @@ svg {
 }
 
 .dashboard-screen {
+  position: relative;
   flex-direction: column;
-  padding: 48px 78px 42px;
+  min-height: 100vh;
+  padding: 58px 96px 32px;
+  overflow: hidden;
+}
+
+.goal-card {
+  position: absolute;
+  top: 14px;
+  left: 95px;
+  width: 310px;
+  min-height: 152px;
+  padding: 18px;
+  border: 1px solid #bcd6ff;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 16px 28px rgb(15 23 42 / 0.14);
+}
+
+.goal-title,
+.goal-row,
+.sessions-pill,
+.settings-row-label,
+.camera-toggle-row {
+  display: flex;
+  align-items: center;
+}
+
+.goal-title {
+  gap: 10px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #bcd6ff;
+  color: #29436c;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.goal-title svg {
+  width: 18px;
+  height: 18px;
+  color: #1b66ff;
+}
+
+.goal-row {
+  justify-content: space-between;
+  margin-top: 16px;
+  color: #415372;
+  font-size: 0.86rem;
+}
+
+.goal-row strong {
+  color: #0e5cff;
+  font-size: 1.25rem;
+}
+
+.text-button {
+  display: block;
+  margin: 18px auto 0;
+  border: 0;
+  color: #075dff;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sessions-pill {
+  position: absolute;
+  top: 62px;
+  right: 110px;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 26px;
+  border: 1px solid #bcd6ff;
+  border-radius: 20px;
+  color: #17345b;
+  background: #ffffff;
+  box-shadow: 0 5px 10px rgb(15 23 42 / 0.13);
+  font-size: 1.12rem;
+}
+
+.sessions-pill span:first-child {
+  font-size: 1.7rem;
 }
 
 .dashboard-header {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
+  justify-content: center;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 14px;
 }
 
 .brand-icon {
-  width: 82px;
-  height: 82px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
 }
 
 .brand-icon svg {
-  width: 42px;
-  height: 42px;
+  width: 28px;
+  height: 28px;
+}
+
+.camera-mode .brand-icon {
+  background: #08b97b;
+  box-shadow: 0 12px 22px rgb(8 185 123 / 0.28);
 }
 
 .brand h1 {
   margin: 0;
-  font-size: 2.7rem;
+  color: #133967;
+  font-size: 1.4rem;
   line-height: 1.05;
 }
 
 .brand p {
-  margin: 8px 0 0;
-  color: var(--ink-muted);
-  font-size: 1.12rem;
-}
-
-.icon-button {
-  display: grid;
-  place-items: center;
-  width: 82px;
-  height: 82px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  color: #050505;
-  background: #ffffff;
-  box-shadow: var(--soft-shadow);
-  cursor: pointer;
-}
-
-.icon-button svg {
-  width: 36px;
-  height: 36px;
+  margin: 6px 0 0;
+  color: #526382;
+  font-size: 0.82rem;
 }
 
 .dashboard-content {
@@ -487,107 +553,372 @@ svg {
   flex: 1;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding-top: 36px;
+  padding-top: 86px;
 }
 
 .mode-tabs {
   display: grid;
-  width: min(100%, 640px);
+  width: min(100%, 528px);
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  padding: 10px;
-  border: 1px solid var(--line);
+  gap: 18px;
+  padding: 7px;
+  border: 1px solid #bcd6ff;
   border-radius: 18px;
   background: #ffffff;
-  box-shadow: var(--soft-shadow);
+  box-shadow: 0 3px 7px rgb(15 23 42 / 0.18);
 }
 
 .mode-tab {
-  min-height: 70px;
+  min-height: 48px;
   border: 0;
-  border-radius: 14px;
-  color: #5f6678;
+  border-radius: 15px;
+  color: #566781;
   background: transparent;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 800;
   cursor: pointer;
 }
 
 .mode-tab.is-active {
   color: #ffffff;
-  background: var(--blue);
-  box-shadow: 0 8px 16px rgb(67 109 255 / 0.24);
+  background: #2f7dff;
+  box-shadow: none;
 }
 
-.dashboard-card {
+.camera-mode .mode-tab.is-active {
+  background: #08bd7b;
+}
+
+.timer-layout {
+  display: grid;
+  width: min(100%, 650px);
+  grid-template-columns: 1fr 168px;
+  gap: 108px;
+  align-items: center;
+  margin-top: 90px;
+}
+
+.timer-panel {
   display: grid;
   place-items: center;
-  width: min(100%, 700px);
-  min-height: 700px;
-  margin-top: 46px;
-  border-radius: 34px;
-  box-shadow: 0 36px 70px rgb(15 23 42 / 0.18);
 }
 
 .timer-ring {
   display: grid;
   place-items: center;
-  width: min(430px, 72vw);
+  align-content: center;
+  width: min(368px, 52vw);
   aspect-ratio: 1;
-  border: 20px solid #dce8ff;
+  border: 14px solid #dceaff;
   border-radius: 50%;
 }
 
+.timer-ring.is-camera-mode {
+  border-color: #cff8e3;
+}
+
+.timer-mode-label {
+  position: relative;
+  margin-bottom: 14px;
+  color: #576a8a;
+  font-size: 0.78rem;
+}
+
+.timer-ring.is-camera-mode .timer-mode-label {
+  padding-left: 18px;
+}
+
+.timer-ring.is-camera-mode .timer-mode-label::before {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #08b97b;
+  content: "";
+  transform: translateY(-50%);
+}
+
 .timer-time {
-  font-size: clamp(4.7rem, 8vw, 7.1rem);
+  color: #172f57;
+  font-size: clamp(4.25rem, 7vw, 5rem);
   font-weight: 300;
   line-height: 1;
   letter-spacing: 0;
 }
 
-.timer-controls {
+.change-time h2 {
+  margin: 0 0 28px;
+  color: #04315d;
+  font-size: 1.05rem;
+}
+
+.time-adjust-grid {
+  display: grid;
+  grid-template-columns: 46px 80px;
+  gap: 20px 14px;
+}
+
+.small-round-button,
+.time-value,
+.back-button,
+.help-button,
+.utility-button,
+.reset-button {
+  border: 1px solid #bcd6ff;
+  background: #ffffff;
+  box-shadow: 0 3px 8px rgb(15 23 42 / 0.12);
+}
+
+.small-round-button {
+  width: 45px;
+  height: 45px;
+  border-radius: 16px;
+  color: #0a3969;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.time-value {
+  display: grid;
+  place-items: center;
+  min-width: 80px;
+  height: 49px;
+  border-radius: 16px;
+  color: #17345b;
+  font-weight: 800;
+}
+
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 10px 96px 0;
+  background: #f7fbff;
+}
+
+.bottom-spacer {
+  min-width: 1px;
+}
+
+.timer-controls,
+.utility-controls {
   display: flex;
   align-items: center;
+}
+
+.timer-controls {
   justify-content: center;
-  gap: 34px;
-  margin-top: 48px;
+  gap: 28px;
+}
+
+.utility-controls {
+  justify-content: flex-end;
+  gap: 14px;
 }
 
 .round-button {
   display: grid;
   place-items: center;
-  border: 0;
   border-radius: 50%;
   cursor: pointer;
 }
 
-.reset-button {
-  width: 100px;
-  height: 100px;
-  color: #050505;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  box-shadow: var(--soft-shadow);
+.reset-button,
+.utility-button {
+  width: 62px;
+  height: 62px;
+  color: #12355f;
 }
 
-.reset-button svg {
-  width: 38px;
-  height: 38px;
+.reset-button svg,
+.utility-button svg {
+  width: 29px;
+  height: 29px;
 }
 
 .play-button {
-  width: 188px;
-  height: 188px;
+  width: 88px;
+  height: 88px;
+  border: 0;
   color: #ffffff;
-  background: var(--blue);
-  box-shadow: 0 28px 54px rgb(67 109 255 / 0.3);
+  background: #2f7dff;
+  box-shadow: 0 18px 30px rgb(47 125 255 / 0.26);
+}
+
+.camera-mode .play-button {
+  background: #08bd7b;
+  box-shadow: 0 18px 30px rgb(8 189 123 / 0.28);
 }
 
 .play-button svg {
-  width: 72px;
-  height: 72px;
+  width: 44px;
+  height: 44px;
   stroke-width: 1.7;
+}
+
+.settings-screen,
+.camera-settings-screen {
+  position: relative;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: 42px 24px;
+}
+
+.settings-shell {
+  width: min(100%, 742px);
+}
+
+.settings-heading {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.settings-heading h1 {
+  margin: 0;
+  color: #143967;
+  font-size: 2.35rem;
+  letter-spacing: 0;
+}
+
+.back-button {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  color: #173d6d;
+  cursor: pointer;
+}
+
+.back-button svg {
+  width: 26px;
+  height: 26px;
+}
+
+.settings-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.settings-row,
+.camera-settings-card {
+  border: 2px solid #bcd6ff;
+  border-radius: 20px;
+  background: #ffffff;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 66px;
+  padding: 0 24px 0 18px;
+  color: #0c335f;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.settings-row-label {
+  gap: 14px;
+}
+
+.settings-row-label svg {
+  width: 22px;
+  height: 22px;
+}
+
+.settings-chevron {
+  color: #65748b;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.camera-settings-card {
+  margin-top: 34px;
+  padding: 28px 26px;
+}
+
+.camera-toggle-row {
+  justify-content: space-between;
+  color: #0d3562;
+  font-weight: 800;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 64px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: #cdd2dc;
+  cursor: pointer;
+}
+
+.toggle-switch span {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 160ms ease;
+}
+
+.toggle-switch.is-on {
+  background: #08b97b;
+}
+
+.toggle-switch.is-on span {
+  transform: translateX(27px);
+}
+
+.camera-select-panel {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #bcd6ff;
+}
+
+.camera-select-panel label {
+  display: block;
+  margin-bottom: 8px;
+  color: #143967;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.camera-select-panel select {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 22px;
+  border: 2px solid #2f7dff;
+  border-radius: 18px;
+  color: #17345b;
+  background: #ffffff;
+  font: inherit;
+  font-size: 1rem;
+}
+
+.help-button {
+  position: fixed;
+  right: 14px;
+  bottom: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #101820;
+  font-size: 1.45rem;
+  cursor: pointer;
 }
 
 .pause-icon {
@@ -623,7 +954,33 @@ svg {
   }
 
   .dashboard-screen {
-    padding: 32px 28px 42px;
+    padding: 28px 28px 96px;
+  }
+
+  .goal-card,
+  .sessions-pill {
+    position: static;
+    width: min(100%, 380px);
+    margin: 0 auto 18px;
+  }
+
+  .dashboard-content {
+    padding-top: 36px;
+  }
+
+  .timer-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    margin-top: 48px;
+  }
+
+  .change-time {
+    justify-self: center;
+    text-align: center;
+  }
+
+  .bottom-bar {
+    padding: 10px 28px 0;
   }
 }
 
@@ -707,62 +1064,70 @@ svg {
     min-width: 0;
   }
 
-  .dashboard-header {
-    align-items: center;
+  .dashboard-screen {
+    padding: 22px 18px 94px;
   }
 
-  .brand-icon,
-  .icon-button {
-    width: 58px;
-    height: 58px;
-  }
-
-  .brand {
-    gap: 14px;
+  .brand-icon {
+    width: 50px;
+    height: 50px;
   }
 
   .brand h1 {
-    font-size: 1.8rem;
-  }
-
-  .brand p {
-    font-size: 0.85rem;
+    font-size: 1.45rem;
   }
 
   .mode-tabs {
-    gap: 6px;
-    padding: 6px;
+    gap: 4px;
+    padding: 5px;
   }
 
   .mode-tab {
-    min-height: 54px;
-    font-size: 0.9rem;
-  }
-
-  .dashboard-card {
-    min-height: 390px;
-    margin-top: 28px;
+    min-height: 46px;
+    font-size: 0.84rem;
   }
 
   .timer-ring {
-    border-width: 14px;
+    width: min(320px, 86vw);
+    border-width: 12px;
   }
 
   .timer-time {
-    font-size: 4.2rem;
+    font-size: 4rem;
   }
 
-  .timer-controls {
-    margin-top: 30px;
+  .bottom-bar {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px 18px;
   }
 
-  .reset-button {
-    width: 78px;
-    height: 78px;
+  .bottom-spacer {
+    display: none;
+  }
+
+  .timer-controls,
+  .utility-controls {
+    justify-content: center;
+  }
+
+  .reset-button,
+  .utility-button {
+    width: 56px;
+    height: 56px;
   }
 
   .play-button {
-    width: 132px;
-    height: 132px;
+    width: 76px;
+    height: 76px;
+  }
+
+  .settings-heading h1 {
+    font-size: 2rem;
+  }
+
+  .settings-row,
+  .camera-settings-card {
+    border-radius: 16px;
   }
 }

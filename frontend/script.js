@@ -3,6 +3,8 @@ const SCREENS = {
   PERMISSION: "permission",
   PREVIEW: "preview",
   DASHBOARD: "dashboard",
+  SETTINGS: "settings",
+  CAMERA_SETTINGS: "camera-settings",
 };
 
 const MODES = {
@@ -32,6 +34,17 @@ const timerDisplay = document.querySelector("[data-timer-display]");
 const startPauseButton = document.querySelector("[data-start-pause-button]");
 const resetButton = document.querySelector("[data-reset-button]");
 const modeTabs = document.querySelectorAll("[data-mode-tab]");
+const openSettingsButton = document.querySelector("[data-open-settings]");
+const backDashboardButtons = document.querySelectorAll("[data-back-dashboard]");
+const openCameraSettingsButton = document.querySelector("[data-open-camera-settings]");
+const backSettingsButton = document.querySelector("[data-back-settings]");
+const cameraToggleButton = document.querySelector("[data-camera-toggle]");
+const cameraSelectPanel = document.querySelector("[data-camera-select-panel]");
+const cameraModeLabel = document.querySelector("[data-camera-mode-label]");
+const timerRing = document.querySelector("[data-timer-ring]");
+const timeMinutes = document.querySelector("[data-time-minutes]");
+const timeIncreaseButton = document.querySelector("[data-time-increase]");
+const timeDecreaseButton = document.querySelector("[data-time-decrease]");
 
 let currentScreen = SCREENS.WELCOME;
 let webcamEnabled = false;
@@ -42,6 +55,7 @@ let currentMode = MODES.FOCUS;
 let remainingSeconds = MODE_LENGTHS[currentMode] * 60;
 let timerId = null;
 let activeFocusSession = null;
+let cameraModeEnabled = false;
 
 function formatTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -83,6 +97,33 @@ function renderModeTabs() {
   });
 }
 
+function renderCameraMode() {
+  document.body.classList.toggle("camera-mode", cameraModeEnabled);
+
+  if (cameraModeLabel) {
+    cameraModeLabel.textContent = cameraModeEnabled ? "Camera mode" : "No-camera mode";
+  }
+
+  if (timerRing) {
+    timerRing.classList.toggle("is-camera-mode", cameraModeEnabled);
+  }
+
+  if (cameraToggleButton) {
+    cameraToggleButton.classList.toggle("is-on", cameraModeEnabled);
+    cameraToggleButton.setAttribute("aria-checked", String(cameraModeEnabled));
+  }
+
+  if (cameraSelectPanel) {
+    cameraSelectPanel.hidden = !cameraModeEnabled;
+  }
+}
+
+function renderTimeControls() {
+  if (timeMinutes) {
+    timeMinutes.textContent = `${MODE_LENGTHS[currentMode]} m`;
+  }
+}
+
 function setRunning(isTimerRunning) {
   if (!startPauseButton) {
     return;
@@ -97,6 +138,8 @@ function renderApp() {
   renderCameraError();
   renderTimer();
   renderModeTabs();
+  renderCameraMode();
+  renderTimeControls();
   setRunning(isRunning());
 }
 
@@ -107,6 +150,18 @@ function navigateTo(screenName) {
 
 function getCurrentLengthSeconds() {
   return MODE_LENGTHS[currentMode] * 60;
+}
+
+function adjustCurrentModeLength(deltaMinutes) {
+  if (isRunning()) {
+    return;
+  }
+
+  const nextLength = Math.min(120, Math.max(1, MODE_LENGTHS[currentMode] + deltaMinutes));
+  MODE_LENGTHS[currentMode] = nextLength;
+  remainingSeconds = getCurrentLengthSeconds();
+  renderTimer();
+  renderTimeControls();
 }
 
 function generateSessionId() {
@@ -279,6 +334,7 @@ function stopCameraStream() {
 
 function continueWithoutCamera() {
   webcamEnabled = false;
+  cameraModeEnabled = false;
   stopCameraStream();
   navigateTo(SCREENS.DASHBOARD);
 }
@@ -301,6 +357,7 @@ async function requestCameraPermission() {
     });
 
     webcamEnabled = true;
+    cameraModeEnabled = true;
 
     if (cameraPreview) {
       cameraPreview.srcObject = cameraStream;
@@ -321,6 +378,7 @@ async function requestCameraPermission() {
 }
 
 function handleReadyToFocus() {
+  cameraModeEnabled = webcamEnabled;
   stopCameraStream();
   navigateTo(SCREENS.DASHBOARD);
 }
@@ -333,6 +391,20 @@ function bindEvents() {
   standardModeButton?.addEventListener("click", continueWithoutCamera);
   startPauseButton?.addEventListener("click", handleStartPauseClick);
   resetButton?.addEventListener("click", resetTimer);
+  openSettingsButton?.addEventListener("click", () => navigateTo(SCREENS.SETTINGS));
+  openCameraSettingsButton?.addEventListener("click", () => navigateTo(SCREENS.CAMERA_SETTINGS));
+  backSettingsButton?.addEventListener("click", () => navigateTo(SCREENS.SETTINGS));
+  cameraToggleButton?.addEventListener("click", () => {
+    cameraModeEnabled = !cameraModeEnabled;
+    webcamEnabled = cameraModeEnabled;
+    renderCameraMode();
+  });
+  timeIncreaseButton?.addEventListener("click", () => adjustCurrentModeLength(1));
+  timeDecreaseButton?.addEventListener("click", () => adjustCurrentModeLength(-1));
+
+  backDashboardButtons.forEach((button) => {
+    button.addEventListener("click", () => navigateTo(SCREENS.DASHBOARD));
+  });
 
   modeTabs.forEach((tab) => {
     tab.addEventListener("click", () => selectMode(tab.dataset.modeTab));
@@ -354,5 +426,8 @@ window.Gazodoro = {
   },
   get cameraError() {
     return cameraError;
+  },
+  get cameraModeEnabled() {
+    return cameraModeEnabled;
   },
 };
