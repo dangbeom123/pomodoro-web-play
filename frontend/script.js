@@ -25,6 +25,9 @@ const MODE_LENGTHS = {
 };
 
 const FOCUS_RESET_LOG_URL = "http://localhost:8000/log/focus-reset";
+const GAZE_SAMPLE_LOG_URL = "http://localhost:8000/log/gaze-samples";
+const GAZE_SAMPLE_INTERVAL_MS = 1000;
+const GAZE_SAMPLE_FLUSH_SIZE = 10;
 
 const screenElements = document.querySelectorAll("[data-screen]");
 const startOnboardingButton = document.querySelector("[data-start-onboarding]");
@@ -70,6 +73,12 @@ let timerId = null;
 let activeFocusSession = null;
 let cameraModeEnabled = false;
 let sessionEndSoundEnabled = true;
+let gazeSampleTimerId = null;
+let gazeSampleBuffer = [];
+let gazeTrackingSessionId = null;
+let gazeCaptureInProgress = false;
+let webgazerReady = false;
+let webgazerStarting = false;
 
 function formatTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -178,6 +187,144 @@ function getCurrentLengthSeconds() {
   return MODE_LENGTHS[currentMode] * 60;
 }
 
+function isGazeTrackingSupported() {
+  return typeof window.webgazer !== "undefined";
+}
+
+async function ensureWebGazerReady() {
+  if (webgazerReady) {
+    return true;
+  }
+
+  if (webgazerStarting) {
+    return false;
+  }
+
+  if (!isGazeTrackingSupported()) {
+    console.warn("WebGazer is unavailable. Gaze samples will not be collected.");
+    return false;
+  }
+
+  webgazerStarting = true;
+
+  try {
+    window.webgazer.showVideoPreview(false);
+    window.webgazer.showPredictionPoints(false);
+    await window.webgazer.begin();
+    webgazerReady = true;
+    console.log("Gaze tracking is ready.");
+    return true;
+  } catch (error) {
+    console.error("Gaze tracking could not start.", error);
+    return false;
+  } finally {
+    webgazerStarting = false;
+  }
+}
+
+async function flushGazeSamples() {
+  if (gazeSampleBuffer.length === 0) {
+    return;
+  }
+
+  const samples = gazeSampleBuffer.splice(0, gazeSampleBuffer.length);
+
+  try {
+    const response = await fetch(GAZE_SAMPLE_LOG_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ samples }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gaze sample log failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Gaze samples logged successfully.", data);
+  } catch (error) {
+    gazeSampleBuffer.unshift(...samples);
+    console.error("Gaze sample logging failed.", error);
+  }
+}
+
+async function captureGazeSample() {
+  if (
+    gazeCaptureInProgress ||
+    !activeFocusSession ||
+    !gazeTrackingSessionId ||
+    currentMode !== MODES.FOCUS ||
+    !cameraModeEnabled ||
+    !webgazerReady
+  ) {
+    return;
+  }
+
+  gazeCaptureInProgress = true;
+
+  try {
+    const prediction = await window.webgazer.getCurrentPrediction();
+
+    if (!prediction || !Number.isFinite(prediction.x) || !Number.isFinite(prediction.y)) {
+      return;
+    }
+
+    gazeSampleBuffer.push({
+      session_id: gazeTrackingSessionId,
+      user_id: null,
+      captured_at: new Date().toISOString(),
+      x: prediction.x,
+      y: prediction.y,
+      viewport_width: window.innerWidth,
+      viewport_height: window.innerHeight,
+      confidence: Number.isFinite(prediction.confidence) ? prediction.confidence : null,
+      source: "pomodoro_test",
+      camera_mode: true,
+    });
+
+    if (gazeSampleBuffer.length >= GAZE_SAMPLE_FLUSH_SIZE) {
+      await flushGazeSamples();
+    }
+  } catch (error) {
+    console.error("Gaze sample capture failed.", error);
+  } finally {
+    gazeCaptureInProgress = false;
+  }
+}
+
+async function startGazeTracking() {
+  if (!activeFocusSession || currentMode !== MODES.FOCUS || !cameraModeEnabled || gazeSampleTimerId) {
+    return;
+  }
+
+  const ready = await ensureWebGazerReady();
+
+  if (!ready) {
+    return;
+  }
+
+  if (!activeFocusSession || currentMode !== MODES.FOCUS || !cameraModeEnabled || gazeSampleTimerId) {
+    return;
+  }
+
+  gazeTrackingSessionId = activeFocusSession.sessionId;
+  await captureGazeSample();
+  gazeSampleTimerId = window.setInterval(captureGazeSample, GAZE_SAMPLE_INTERVAL_MS);
+}
+
+async function stopGazeTracking() {
+  if (gazeSampleTimerId) {
+    window.clearInterval(gazeSampleTimerId);
+    gazeSampleTimerId = null;
+  }
+
+  await captureGazeSample();
+  gazeTrackingSessionId = null;
+  await flushGazeSamples();
+}
+
 function adjustCurrentModeLength(deltaMinutes) {
   if (isRunning()) {
     return;
@@ -280,6 +427,7 @@ function resetTimer() {
   renderTimer();
 
   if (shouldLogFocusReset) {
+    stopGazeTracking();
     logFocusReset(resetAt, focusDurationSec);
     activeFocusSession = null;
   }
@@ -288,6 +436,10 @@ function resetTimer() {
 function selectMode(nextMode) {
   if (!MODE_LENGTHS[nextMode]) {
     return;
+  }
+
+  if (currentMode === MODES.FOCUS && activeFocusSession) {
+    stopGazeTracking();
   }
 
   pauseTimer();
@@ -299,6 +451,7 @@ function selectMode(nextMode) {
 function switchModeAfterCountdown() {
   if (currentMode === MODES.FOCUS && activeFocusSession) {
     activeFocusSession.completed = true;
+    stopGazeTracking();
   }
 
   currentMode = currentMode === MODES.FOCUS ? MODES.SHORT_BREAK : MODES.FOCUS;
@@ -332,6 +485,7 @@ function startTimer() {
   }
 
   ensureFocusSession();
+  startGazeTracking();
   timerId = setInterval(tick, 1000);
   setRunning(true);
 }
@@ -427,6 +581,13 @@ function bindEvents() {
     cameraModeEnabled = !cameraModeEnabled;
     webcamEnabled = cameraModeEnabled;
     renderCameraMode();
+
+    if (cameraModeEnabled) {
+      startGazeTracking();
+      return;
+    }
+
+    stopGazeTracking();
   });
   soundNotificationToggle?.addEventListener("click", () => {
     sessionEndSoundEnabled = !sessionEndSoundEnabled;
