@@ -138,6 +138,28 @@
     </section>
 
     <section class="screen dashboard-screen" data-screen="dashboard" aria-labelledby="dashboard-title">
+      <aside class="goal-card" aria-label="Today's goal">
+        <div class="goal-title">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="8"></circle>
+            <circle cx="12" cy="12" r="4"></circle>
+            <circle cx="12" cy="12" r="1"></circle>
+          </svg>
+          <span>TODAY'S GOAL</span>
+        </div>
+        <div class="goal-row">
+          <span>Sessions left</span>
+          <strong>0</strong>
+        </div>
+        <button class="text-button" type="button">Edit Goal</button>
+      </aside>
+
+      <div class="sessions-pill" aria-label="Sessions today">
+        <span aria-hidden="true">🔥</span>
+        <strong>0</strong>
+        <span>sessions today</span>
+      </div>
+
       <header class="dashboard-header">
         <div class="brand">
           <div class="brand-icon" aria-hidden="true">
@@ -151,13 +173,6 @@
             <p>Gaze-tracking productivity timer</p>
           </div>
         </div>
-
-        <button class="icon-button" type="button" aria-label="Settings">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path>
-            <path d="M19.4 15a1.8 1.8 0 0 0 .4 2l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.8 1.8 0 0 0-2-.4 1.8 1.8 0 0 0-1 1.6V21a2 2 0 0 1-4 0v-.1a1.8 1.8 0 0 0-1-1.6 1.8 1.8 0 0 0-2 .4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.8 1.8 0 0 0 .4-2 1.8 1.8 0 0 0-1.6-1H3a2 2 0 0 1 0-4h.1a1.8 1.8 0 0 0 1.6-1 1.8 1.8 0 0 0-.4-2l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.8 1.8 0 0 0 2 .4 1.8 1.8 0 0 0 1-1.6V3a2 2 0 0 1 4 0v.1a1.8 1.8 0 0 0 1 1.6 1.8 1.8 0 0 0 2-.4l.1-.1A2 2 0 0 1 20 7l-.1.1a1.8 1.8 0 0 0-.4 2 1.8 1.8 0 0 0 1.6 1h.1a2 2 0 0 1 0 4h-.1a1.8 1.8 0 0 0-1.7 1Z"></path>
-          </svg>
-        </button>
       </header>
 
       <div class="dashboard-content">
@@ -167,13 +182,27 @@
           <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode-tab="LONG_BREAK">Long Break</button>
         </div>
 
-        <article class="dashboard-card" aria-label="Pomodoro timer">
-          <div class="timer-ring">
+        <div class="timer-layout">
+          <article class="timer-panel" aria-label="Pomodoro timer">
+          <div class="timer-ring" data-timer-ring>
+            <span class="timer-mode-label" data-camera-mode-label>No-camera mode</span>
             <span class="timer-time" data-timer-display>25:00</span>
           </div>
-        </article>
+          </article>
 
-        <div class="timer-controls" aria-label="Timer actions">
+          <aside class="change-time" aria-label="Change time">
+            <h2>Change time</h2>
+            <div class="time-adjust-grid">
+              <button class="small-round-button" type="button" aria-label="Increase focus time" data-time-increase>+</button>
+              <span class="time-value" data-time-minutes>25 m</span>
+              <button class="small-round-button" type="button" aria-label="Decrease focus time" data-time-decrease>-</button>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bottom-bar">
+          <div class="bottom-spacer" aria-hidden="true"></div>
+          <div class="timer-controls" aria-label="Timer actions">
           <button class="round-button reset-button" type="button" aria-label="Reset timer" data-reset-button>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 12a8 8 0 1 0 2.3-5.7"></path>
@@ -189,8 +218,131 @@
               <path d="M13 5h4v14h-4Z"></path>
             </svg>
           </button>
+          </div>
+          <div class="utility-controls" aria-label="Dashboard tools">
+            <button class="round-button utility-button" type="button" aria-label="Statistics">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 19V5"></path>
+                <path d="M4 19h16"></path>
+                <path d="M8 17v-5"></path>
+                <path d="M12 17V8"></path>
+                <path d="M16 17v-8"></path>
+              </svg>
+            </button>
+            <button class="round-button utility-button" type="button" aria-label="Settings" data-open-settings>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path>
+                <path d="M19.4 15a1.8 1.8 0 0 0 .4 2l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.8 1.8 0 0 0-2-.4 1.8 1.8 0 0 0-1 1.6V21a2 2 0 0 1-4 0v-.1a1.8 1.8 0 0 0-1-1.6 1.8 1.8 0 0 0-2 .4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.8 1.8 0 0 0 .4-2 1.8 1.8 0 0 0-1.6-1H3a2 2 0 0 1 0-4h.1a1.8 1.8 0 0 0 1.6-1 1.8 1.8 0 0 0-.4-2l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.8 1.8 0 0 0 2 .4 1.8 1.8 0 0 0 1-1.6V3a2 2 0 0 1 4 0v.1a1.8 1.8 0 0 0 1 1.6 1.8 1.8 0 0 0 2-.4l.1-.1A2 2 0 0 1 20 7l-.1.1a1.8 1.8 0 0 0-.4 2 1.8 1.8 0 0 0 1.6 1h.1a2 2 0 0 1 0 4h-.1a1.8 1.8 0 0 0-1.7 1Z"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
+    </section>
+
+    <section class="screen settings-screen" data-screen="settings" aria-labelledby="settings-title">
+      <div class="settings-shell">
+        <header class="settings-heading">
+          <button class="back-button" type="button" aria-label="Back to dashboard" data-back-dashboard>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 12H5"></path>
+              <path d="m12 19-7-7 7-7"></path>
+            </svg>
+          </button>
+          <h1 id="settings-title">Settings</h1>
+        </header>
+
+        <div class="settings-list">
+          <button class="settings-row" type="button" data-open-camera-settings>
+            <span class="settings-row-label">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 8h2l1.4-2h5.2L16 8h2a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"></path>
+                <circle cx="12" cy="13" r="3"></circle>
+              </svg>
+              Camera
+            </span>
+            <span class="settings-chevron" aria-hidden="true">›</span>
+          </button>
+          <button class="settings-row" type="button">
+            <span class="settings-row-label">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+                <path d="M16 9.5a4 4 0 0 1 0 5"></path>
+                <path d="M19 7a8 8 0 0 1 0 10"></path>
+              </svg>
+              Sound
+            </span>
+            <span class="settings-chevron" aria-hidden="true">›</span>
+          </button>
+          <button class="settings-row" type="button">
+            <span class="settings-row-label">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 19V5"></path>
+                <path d="M4 19h16"></path>
+                <path d="M8 17v-5"></path>
+                <path d="M12 17V8"></path>
+                <path d="M16 17v-8"></path>
+              </svg>
+              Statistics
+            </span>
+            <span class="settings-chevron" aria-hidden="true">›</span>
+          </button>
+          <button class="settings-row" type="button">
+            <span class="settings-row-label">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 7v5l3 2"></path>
+              </svg>
+              Timer
+            </span>
+            <span class="settings-chevron" aria-hidden="true">›</span>
+          </button>
+          <button class="settings-row" type="button">
+            <span class="settings-row-label">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="13.5" cy="6.5" r="2.5"></circle>
+                <circle cx="8" cy="12" r="2.5"></circle>
+                <circle cx="15.5" cy="15.5" r="2.5"></circle>
+                <path d="M17.8 8.8c1.8 1.1 2.7 2.7 2.2 4.5-.6 2-2.6 2.5-4.2 2.4"></path>
+              </svg>
+              Appearance
+            </span>
+            <span class="settings-chevron" aria-hidden="true">›</span>
+          </button>
+        </div>
+      </div>
+      <button class="help-button" type="button" aria-label="Help">?</button>
+    </section>
+
+    <section class="screen camera-settings-screen" data-screen="camera-settings" aria-labelledby="camera-settings-title">
+      <div class="settings-shell">
+        <header class="settings-heading">
+          <button class="back-button" type="button" aria-label="Back to settings" data-back-settings>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 12H5"></path>
+              <path d="m12 19-7-7 7-7"></path>
+            </svg>
+          </button>
+          <h1 id="camera-settings-title">Camera</h1>
+        </header>
+
+        <article class="camera-settings-card">
+          <div class="camera-toggle-row">
+            <span>Camera On/Off</span>
+            <button class="toggle-switch" type="button" role="switch" aria-checked="false" data-camera-toggle>
+              <span></span>
+            </button>
+          </div>
+          <div class="camera-select-panel" data-camera-select-panel hidden>
+            <label for="camera-select">Select camera</label>
+            <select id="camera-select" data-camera-select>
+              <option>Camera 1</option>
+              <option>Camera 2</option>
+            </select>
+          </div>
+        </article>
+      </div>
+      <button class="help-button" type="button" aria-label="Help">?</button>
     </section>
   </main>
 </body>
