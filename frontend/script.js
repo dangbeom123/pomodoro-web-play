@@ -17,6 +17,8 @@ const MODE_LENGTHS = {
   [MODES.LONG_BREAK]: 15,
 };
 
+const FOCUS_RESET_LOG_URL = "http://localhost:8000/log/focus-reset";
+
 const screenElements = document.querySelectorAll("[data-screen]");
 const startOnboardingButton = document.querySelector("[data-start-onboarding]");
 const enableCameraButton = document.querySelector("[data-enable-camera]");
@@ -39,6 +41,7 @@ let cameraError = "";
 let currentMode = MODES.FOCUS;
 let remainingSeconds = MODE_LENGTHS[currentMode] * 60;
 let timerId = null;
+let activeFocusSession = null;
 
 function formatTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -106,6 +109,76 @@ function getCurrentLengthSeconds() {
   return MODE_LENGTHS[currentMode] * 60;
 }
 
+function generateSessionId() {
+  if (window.crypto && window.crypto.randomUUID) {
+    return window.crypto.randomUUID();
+  }
+
+  return `focus-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function ensureFocusSession() {
+  if (currentMode !== MODES.FOCUS || activeFocusSession) {
+    return;
+  }
+
+  activeFocusSession = {
+    sessionId: generateSessionId(),
+    startedAt: new Date(),
+    initialRemainingSeconds: remainingSeconds,
+    completed: false,
+  };
+}
+
+function getFocusDurationSeconds() {
+  if (!activeFocusSession) {
+    return 0;
+  }
+
+  if (activeFocusSession.completed || currentMode !== MODES.FOCUS) {
+    return activeFocusSession.initialRemainingSeconds;
+  }
+
+  return Math.max(0, activeFocusSession.initialRemainingSeconds - remainingSeconds);
+}
+
+function logFocusReset(resetAt, focusDurationSec) {
+  if (!activeFocusSession) {
+    return;
+  }
+
+  const payload = {
+    session_id: activeFocusSession.sessionId,
+    user_id: null,
+    started_at: activeFocusSession.startedAt.toISOString(),
+    reset_at: resetAt.toISOString(),
+    focus_duration_sec: focusDurationSec,
+    reset_reason: "manual_reset",
+    source: "pomodoro_test",
+  };
+
+  fetch(FOCUS_RESET_LOG_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Focus reset log failed with status ${response.status}`);
+      }
+
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Focus reset logged successfully.", data);
+    })
+    .catch((error) => {
+      console.error("Focus reset logging failed.", error);
+    });
+}
+
 function pauseTimer() {
   if (!isRunning()) {
     return;
@@ -117,9 +190,18 @@ function pauseTimer() {
 }
 
 function resetTimer() {
+  const shouldLogFocusReset = Boolean(activeFocusSession);
+  const resetAt = new Date();
+  const focusDurationSec = getFocusDurationSeconds();
+
   pauseTimer();
   remainingSeconds = getCurrentLengthSeconds();
   renderTimer();
+
+  if (shouldLogFocusReset) {
+    logFocusReset(resetAt, focusDurationSec);
+    activeFocusSession = null;
+  }
 }
 
 function selectMode(nextMode) {
@@ -134,6 +216,10 @@ function selectMode(nextMode) {
 }
 
 function switchModeAfterCountdown() {
+  if (currentMode === MODES.FOCUS && activeFocusSession) {
+    activeFocusSession.completed = true;
+  }
+
   currentMode = currentMode === MODES.FOCUS ? MODES.SHORT_BREAK : MODES.FOCUS;
   remainingSeconds = getCurrentLengthSeconds();
   renderApp();
@@ -164,6 +250,7 @@ function startTimer() {
     switchModeAfterCountdown();
   }
 
+  ensureFocusSession();
   timerId = setInterval(tick, 1000);
   setRunning(true);
 }
